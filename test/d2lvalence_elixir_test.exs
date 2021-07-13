@@ -1,8 +1,4 @@
 defmodule D2lvalenceElixirTest do
   use ExUnit.Case
-  doctest D2lvalenceElixir
-
-  test "greets the world" do
-    assert D2lvalenceElixir.hello() == :world
-  end
+  doctest D2lvalenceElixir.Auth.D2LAppContext
 end

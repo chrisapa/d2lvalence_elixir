@@ -339,4 +339,80 @@ defmodule D2lvalenceElixir.Auth.D2LUserContext do
     user_context
     |> Map.update!(:server_skew, new_skew)
   end
+
+  @spec get_simple_authentication_keys(%D2lvalenceElixir.Auth.D2LUserContext{
+          :user_id => String.t(),
+          :user_key => String.t()
+        }) :: %{user_id: String.t(), user_key: String.t()}
+  @doc """
+  Takes a full D2LUserContext and returns a map with only user_id and user_key.
+  This is usefull for Phoenix session storage. You don't send app_id and app_key to the user.
+  """
+  def get_simple_authentication_keys(%D2lvalenceElixir.Auth.D2LUserContext{} = user_context) do
+    %D2lvalenceElixir.Auth.D2LUserContextSimple{
+      user_id: user_context.user_id,
+      user_key: user_context.user_key,
+      anonymous: user_context.anonymous,
+      encrypt_requests: user_context.encrypt_requests,
+      host: user_context.host,
+      scheme: user_context.scheme,
+      server_skew: user_context.server_skew
+    }
+  end
+
+  @spec get_full_user_context(
+          %D2lvalenceElixir.Auth.D2LAppContext{
+            :app_id => String.t(),
+            :app_key => String.t()
+          },
+          %D2lvalenceElixir.Auth.D2LUserContextSimple{
+            :anonymous => boolean(),
+            :encrypt_requests => boolean(),
+            :host => String.t(),
+            :server_skew => Integer.t(),
+            :scheme => String.t(),
+            :user_id => String.t(),
+            :user_key => String.t()
+          }
+        ) ::
+          {:error, String.t()}
+          | {:ok,
+             %D2lvalenceElixir.Auth.D2LUserContext{
+               anonymous: boolean,
+               app_id: String.t(),
+               app_key: String.t(),
+               encrypt_requests: boolean,
+               host: String.t(),
+               scheme: String.t(),
+               server_skew: Integer.t(),
+               user_id: String.t(),
+               user_key: String.t()
+             }}
+  @doc """
+  Creates a Full User Context from the app context and the simple authentication information created by get_simple_authentication_keys/1
+  """
+  def get_full_user_context(
+        %D2lvalenceElixir.Auth.D2LAppContext{} = app_context,
+        %D2lvalenceElixir.Auth.D2LUserContextSimple{
+          user_id: user_id,
+          user_key: user_key,
+          anonymous: anonymous,
+          encrypt_requests: encrypt_requests,
+          host: host,
+          scheme: scheme,
+          server_skew: server_skew
+        }
+      ) do
+    new(
+      host: host,
+      user_id: user_id,
+      user_key: user_key,
+      anonymous: anonymous,
+      encrypt_requests: encrypt_requests,
+      scheme: scheme,
+      server_skew: server_skew,
+      app_id: app_context.app_id,
+      app_key: app_context.app_key
+    )
+  end
 end

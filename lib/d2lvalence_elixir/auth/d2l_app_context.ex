@@ -60,8 +60,8 @@ defmodule D2lvalenceElixir.Auth.D2LAppContext do
 
   ## Examples
 
-      iex> D2lvalenceElixir.Auth.D2LAppContext.create_url_for_authentication(%D2lvalenceElixir.Auth.D2LAppContext{"app_id": "J5fm9B0Rq934mBQV9fGLWP", "app_key": "rYBPwHlBy0wPxlP-QZPedr"}, "lms.someUni.edu:443", "http://localhost:8080/token")
-      "https://lms.someUni.edu/d2l/auth/api/x_a=J5fm9B0Rq934mBQV9fGLWP&x_b=-4KVKL-uNYeXopvBXFdM0SHZgyiQCVWu0oDmF5JkL48&x_target=http%3A%2F%2Flocalhost%3A8080%2Ftoken"
+      iex> D2lvalenceElixir.Auth.D2LAppContext.create_url_for_authentication(%D2lvalenceElixir.Auth.D2LAppContext{app_id: "J5fm9B0Rq934mBQV9fGLWP", app_key: "rYBPwHlBy0wPxlP-QZPedr"}, "lms.someUni.edu:443", "http://localhost:8080/token")
+      "https://lms.someUni.edu:443/d2l/auth/api/token?x_a=J5fm9B0Rq934mBQV9fGLWP&x_b=-4KVKL-uNYeXopvBXFdM0SHZgyiQCVWu0oDmF5JkL48&x_target=http%3A%2F%2Flocalhost%3A8080%2Ftoken"
 
   """
   def create_url_for_authentication(
