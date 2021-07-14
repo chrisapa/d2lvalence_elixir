@@ -41,7 +41,7 @@ defmodule D2lvalenceElixir.Auth.D2LUserContext do
           app_id: String.t(),
           app_key: String.t(),
           encrypt_requests: true | false,
-          server_skew: Integer.t()
+          server_skew: integer()
         }) ::
           {:error, String.t()}
           | {:ok,
@@ -52,7 +52,7 @@ defmodule D2lvalenceElixir.Auth.D2LUserContext do
                encrypt_requests: boolean,
                host: String.t(),
                scheme: String.t(),
-               server_skew: Integer.t(),
+               server_skew: integer(),
                user_id: String.t(),
                user_key: String.t()
              }}
@@ -291,7 +291,7 @@ defmodule D2lvalenceElixir.Auth.D2LUserContext do
   # This id the comment in the D2LValence python implementation, and I mantain this here.
   @spec interpret_result(
           %D2lvalenceElixir.Auth.D2LUserContext{},
-          Integer.t(),
+          integer(),
           String.t(),
           String.t() | nil
         ) ::
@@ -330,7 +330,7 @@ defmodule D2lvalenceElixir.Auth.D2LUserContext do
     end
   end
 
-  @spec set_new_skew(%D2lvalenceElixir.Auth.D2LUserContext{}, Integer.t()) ::
+  @spec set_new_skew(%D2lvalenceElixir.Auth.D2LUserContext{}, integer()) ::
           %D2lvalenceElixir.Auth.D2LUserContext{}
   @doc """
   Adjust the known time skew between the local client using this
@@ -372,7 +372,7 @@ defmodule D2lvalenceElixir.Auth.D2LUserContext do
             :anonymous => boolean(),
             :encrypt_requests => boolean(),
             :host => String.t(),
-            :server_skew => Integer.t(),
+            :server_skew => integer(),
             :scheme => String.t(),
             :user_id => String.t(),
             :user_key => String.t()
@@ -387,7 +387,7 @@ defmodule D2lvalenceElixir.Auth.D2LUserContext do
                encrypt_requests: boolean,
                host: String.t(),
                scheme: String.t(),
-               server_skew: Integer.t(),
+               server_skew: integer(),
                user_id: String.t(),
                user_key: String.t()
              }}
