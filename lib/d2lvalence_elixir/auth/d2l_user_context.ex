@@ -174,11 +174,11 @@ defmodule D2lvalenceElixir.Auth.D2LUserContext do
       end
 
     %{
-      @app_id => [context.app_id],
-      @app_sig => [app_sig],
-      @user_id => [context.user_id],
-      @user_sig => [user_sig],
-      @time => [time]
+      @app_id => context.app_id,
+      @app_sig => app_sig,
+      @user_id => context.user_id,
+      @user_sig => user_sig,
+      @time => time
     }
   end
 
@@ -228,9 +228,12 @@ defmodule D2lvalenceElixir.Auth.D2LUserContext do
       end
 
     query_result =
-      query
+      case query do
+        nil -> %{}
+        query -> query
+      end
       |> Map.new()
-      |> Map.merge(path |> build_tokens_for_path(method: method))
+      |> Map.merge(build_tokens_for_path(user_context, path, method: method))
       |> URI.encode_query()
 
     %URI{scheme: scheme, authority: netloc, path: path, query: query_result, fragment: fragment}
