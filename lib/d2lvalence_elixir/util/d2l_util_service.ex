@@ -57,8 +57,8 @@ defmodule D2lvalenceElixir.Utils.Service do
          user_context = %D2lvalenceElixir.Auth.D2LUserContext{},
          mime_type,
          serializer,
-         headers \\ [],
-         body \\ []
+         headers,
+         body
        ) do
     parameters = encode_request_body(body, mime_type, serializer)
 
@@ -84,7 +84,7 @@ defmodule D2lvalenceElixir.Utils.Service do
          user_context = %D2lvalenceElixir.Auth.D2LUserContext{},
          mime_type,
          serializers,
-         options \\ []
+         options
        ) do
     defaults = [
       headers: [],
@@ -143,7 +143,7 @@ defmodule D2lvalenceElixir.Utils.Service do
          route,
          user_context = %D2lvalenceElixir.Auth.D2LUserContext{},
          serializers,
-         body \\ []
+         body
        ) do
     case user_context.anonymous do
       true ->
@@ -166,7 +166,7 @@ defmodule D2lvalenceElixir.Utils.Service do
          route,
          user_context = %D2lvalenceElixir.Auth.D2LUserContext{},
          serializers,
-         body \\ []
+         body
        ) do
     case user_context.anonymous do
       true ->
@@ -189,7 +189,7 @@ defmodule D2lvalenceElixir.Utils.Service do
          route,
          user_context = %D2lvalenceElixir.Auth.D2LUserContext{},
          serializers,
-         body \\ []
+         body
        ) do
     case user_context.anonymous do
       true ->
@@ -212,7 +212,7 @@ defmodule D2lvalenceElixir.Utils.Service do
          route,
          user_context = %D2lvalenceElixir.Auth.D2LUserContext{},
          serializers,
-         body \\ []
+         body
        ) do
     do_request(
       :get,
@@ -229,7 +229,7 @@ defmodule D2lvalenceElixir.Utils.Service do
          route,
          user_context = %D2lvalenceElixir.Auth.D2LUserContext{},
          serializers,
-         body \\ []
+         body
        ) do
     do_request(
       :post,
@@ -1076,7 +1076,7 @@ defmodule D2lvalenceElixir.Utils.Service do
   # Dropbox
 
   @spec get_all_dropbox_folders_for_orgunit(
-          %D2lvalenceElixir.Auth.D2LUserContext{:anonymous => true, optional(any) => any},
+          %D2lvalenceElixir.Auth.D2LUserContext{},
           integer(),
           serializers: map(),
           ver: String.t(),
@@ -1122,7 +1122,7 @@ defmodule D2lvalenceElixir.Utils.Service do
   """
 
   @spec get_submissions_for_dropbox_folder(
-          %D2lvalenceElixir.Auth.D2LUserContext{:anonymous => true, optional(any) => any},
+          %D2lvalenceElixir.Auth.D2LUserContext{},
           integer(),
           integer(),
           serializers: map(),
@@ -1158,7 +1158,7 @@ defmodule D2lvalenceElixir.Utils.Service do
     %{serializers: serializers, ver: ver, body: body} =
       Keyword.merge(defaults, options) |> Enum.into(%{})
 
-    "/d2l/api/le/#{ver}/#{org_unit_id}/dropbox/folders/#{2}/submissions/"
+    "/d2l/api/le/#{ver}/#{org_unit_id}/dropbox/folders/#{folder_id}/submissions/"
     |> get(user_context, serializers, body)
   end
 
