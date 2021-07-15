@@ -72,7 +72,7 @@ defmodule D2lvalenceElixir.Examples.SimpleAuthentication do
     full_user_context
   end
 end
-``
+```
 
 ### Simple calls
 
