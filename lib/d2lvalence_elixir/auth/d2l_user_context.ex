@@ -86,7 +86,8 @@ defmodule D2lvalenceElixir.Auth.D2LUserContext do
       app_id: "",
       app_key: "",
       encrypt_requests: false,
-      server_skew: 0
+      server_skew: 0,
+      anonymous: false
     ]
 
     options = Keyword.merge(defaults, options) |> Enum.into(%{})
@@ -118,8 +119,8 @@ defmodule D2lvalenceElixir.Auth.D2LUserContext do
       true ->
         anonymous =
           case user_id do
-            "" -> True
-            _ -> False
+            "" -> true
+            _ -> false
           end
 
         {:ok,
@@ -343,15 +344,15 @@ defmodule D2lvalenceElixir.Auth.D2LUserContext do
     |> Map.update!(:server_skew, new_skew)
   end
 
-  @spec get_simple_authentication_keys(%D2lvalenceElixir.Auth.D2LUserContext{
+  @spec get_simple_user_context(%D2lvalenceElixir.Auth.D2LUserContext{
           :user_id => String.t(),
           :user_key => String.t()
         }) :: %{user_id: String.t(), user_key: String.t()}
   @doc """
-  Takes a full D2LUserContext and returns a map with only user_id and user_key.
+  Takes a full D2LUserContext and returns a map with only the basic information for authentication.
   This is usefull for Phoenix session storage. You don't send app_id and app_key to the user.
   """
-  def get_simple_authentication_keys(%D2lvalenceElixir.Auth.D2LUserContext{} = user_context) do
+  def get_simple_user_context(%D2lvalenceElixir.Auth.D2LUserContext{} = user_context) do
     %D2lvalenceElixir.Auth.D2LUserContextSimple{
       user_id: user_context.user_id,
       user_key: user_context.user_key,

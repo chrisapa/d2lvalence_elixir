@@ -137,12 +137,12 @@ defmodule D2lvalenceElixir.Auth.D2LAppContext do
 
   @spec create_user_context(
           %D2lvalenceElixir.Auth.D2LAppContext{},
-          %{
+          [
             result_uri: String.t(),
             host: String.t(),
             encrypt_requests: true | false,
             d2l_user_context_props_dict: %{}
-          }
+          ]
           | []
         ) ::
           {:error, String.t()}
