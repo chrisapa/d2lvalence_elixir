@@ -1,4 +1,4 @@
-defmodule D2lvalenceElixir.MixProject do
+defmodule D2lvalenceElixir.Mixfile do
   use Mix.Project
 
   def project do
@@ -6,9 +6,30 @@ defmodule D2lvalenceElixir.MixProject do
       app: :d2lvalence_elixir,
       version: "0.1.0",
       elixir: "~> 1.12",
+      build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      description: description(),
+      package: package()
     ]
+  end
+
+  defp package do
+    [
+      files: ["lib", "mix.exs", "README*", "LICENSE*"],
+      maintainers: ["Christian Aparicio Baquen (chris_apa)"],
+      licenses: ["Apache 2.0"],
+      links: %{
+        "GitHub" => "https://github.com/chrisapa/d2lvalence_elixir",
+        "Docs" => "https://hexdocs.pm/d2lvalence_elixir/"
+      }
+    ]
+  end
+
+  defp description do
+    """
+    Elixir implementation of d2lvalence to connect to the Desire2Learn's Valence API (Brightspace)
+    """
   end
 
   # Run "mix help compile.app" to learn about applications.
