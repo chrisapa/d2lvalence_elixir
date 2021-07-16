@@ -10,7 +10,17 @@ defmodule D2lvalenceElixir.Mixfile do
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       description: description(),
-      package: package()
+      package: package(),
+
+      # Docs
+      name: "D2lvalenceElixir",
+      source_url: "https://github.com/chrisapa/d2lvalence_elixir",
+      homepage_url: "https://github.com/chrisapa/d2lvalence_elixir",
+      docs: [
+        # The main page in the docs
+        main: "readme",
+        extras: ["README.md"]
+      ]
     ]
   end
 

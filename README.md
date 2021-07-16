@@ -1,4 +1,6 @@
-# D2lvalenceElixir - Desire2Learn Client Library for Elixir
+# D2lvalenceElixir
+
+## Desire2Learn Client Library for Elixir
 
 Elixir implementation of d2lvalence to connecto to the Desire2Learn's Valence API.
 
