@@ -1088,8 +1088,8 @@ defmodule D2lvalenceElixir.Utils.Service do
   ## Returns
   `{:error, cause}` when an error is caused.
 
-  `{:ok, list(%{})}`
-  The result contains a list with all the folders of the orgunit.
+  `{:ok, list(%D2lvalenceElixir.Data.DropboxFolder{})}`
+  The result contains a list with all the folders for the orgunit.
 
   ## Options
   version: version of the component to verify. If not specified, will get the version of the component.
@@ -1112,6 +1112,18 @@ defmodule D2lvalenceElixir.Utils.Service do
 
     "/d2l/api/le/#{ver}/#{org_unit_id}/dropbox/folders/"
     |> get(user_context, serializers, body)
+    |> case do
+      {:ok, result} ->
+        {:ok,
+         result
+         |> Enum.map(fn dropbox_folder ->
+           dropbox_folder
+           |> D2lvalenceElixir.Data.DropboxFolder.new()
+         end)}
+
+      result ->
+        result
+    end
   end
 
   """
@@ -1160,6 +1172,109 @@ defmodule D2lvalenceElixir.Utils.Service do
 
     "/d2l/api/le/#{ver}/#{org_unit_id}/dropbox/folders/#{folder_id}/submissions/"
     |> get(user_context, serializers, body)
+    |> case do
+      {:ok, result} ->
+        {:ok,
+         result
+         |> Enum.map(fn submission ->
+           submission
+           |> D2lvalenceElixir.Data.SubmissionsForDropbox.new()
+         end)}
+
+      result ->
+        result
+    end
+  end
+
+  defp get_specific_file_from_submission(
+         user_context = %D2lvalenceElixir.Auth.D2LUserContext{},
+         org_unit_id,
+         folder_id,
+         submission_id,
+         file_id,
+         options
+       ) do
+    defaults = [
+      serializers: %{},
+      ver: "1.0",
+      body: []
+    ]
+
+    %{serializers: serializers, ver: ver, body: body} =
+      Keyword.merge(defaults, options) |> Enum.into(%{})
+
+    "/d2l/api/le/#{ver}/#{org_unit_id}/dropbox/folders/#{folder_id}/submissions/#{submission_id}/files/#{file_id}"
+    |> get(user_context, serializers, body)
+  end
+
+  @spec get_files_from_submission(
+          %D2lvalenceElixir.Auth.D2LUserContext{},
+          integer(),
+          integer(),
+          %D2lvalenceElixir.Data.SingleSubmissionForDropbox{},
+          serializers: map() | %{},
+          ver: String.t(),
+          body: list() | []
+        ) :: {:ok, list(%D2lvalenceElixir.Data.FileResponse{})} | {:error, String.t()}
+
+  @doc """
+  Gets all the files from an specific submission.
+
+  ## Returns
+  `{:error, cause}` when an error is caused.
+
+  `{:ok, list(%D2lvalenceElixir.Data.FileResponse{})}`
+  The result contains a list with all the files. The files are stored on a temporary path.
+
+  ## Options
+  version: version of the component to verify. If not specified, will get the version of the component.
+  serializers: Map of availaber serializers. application/json recommended.
+  body: Options to pass to the body of the request.
+  """
+  def get_files_from_submission(
+        user_context = %D2lvalenceElixir.Auth.D2LUserContext{},
+        org_unit_id,
+        folder_id,
+        submission = %D2lvalenceElixir.Data.SingleSubmissionForDropbox{},
+        options \\ []
+      ) do
+    submission.files
+    |> Enum.map(fn
+      file = %D2lvalenceElixir.Data.SubmissionFile{} ->
+        case get_specific_file_from_submission(
+               user_context,
+               org_unit_id,
+               folder_id,
+               submission.id,
+               file.file_id,
+               options
+             ) do
+          {:ok, file_content} ->
+            file_full_path =
+              System.tmp_dir!()
+              |> Path.join(
+                "#{:os.system_time() |> to_string() |> Base.encode64() |> String.replace("=", "")}#{Path.extname(file.file_name)}"
+              )
+
+            case File.write!(file_full_path, file_content) do
+              :ok ->
+                {:ok,
+                 D2lvalenceElixir.Data.FileResponse.new(
+                   filename: file.file_name,
+                   path: file_full_path
+                 )}
+
+              error ->
+                {:error, "Can't write file #{file.file_name} -> #{error}"}
+            end
+
+          error ->
+            error
+        end
+
+      _ ->
+        {:error, "All files must be %D2lvalenceElixir.Data.SubmissionFile{}"}
+    end)
   end
 
   # Lockers

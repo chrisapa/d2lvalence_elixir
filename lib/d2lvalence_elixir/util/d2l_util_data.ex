@@ -492,4 +492,230 @@ defmodule D2lvalenceElixir.Data do
       }
     end
   end
+
+  defmodule DropboxFolder do
+    @enforce_keys [
+      :assessment,
+      :attachments,
+      :availability,
+      :category_id,
+      :custom_instructions,
+      :display_in_calendar,
+      :due_date,
+      :flagged_files,
+      :groupe_type_id,
+      :id,
+      :is_hidden,
+      :name,
+      :notification_email,
+      :total_files,
+      :total_users,
+      :total_users_with_feedback,
+      :total_users_with_submissions,
+      :unread_files
+    ]
+
+    defstruct [
+      :assessment,
+      :attachments,
+      :availability,
+      :category_id,
+      :custom_instructions,
+      :display_in_calendar,
+      :due_date,
+      :flagged_files,
+      :groupe_type_id,
+      :id,
+      :is_hidden,
+      :name,
+      :notification_email,
+      :total_files,
+      :total_users,
+      :total_users_with_feedback,
+      :total_users_with_submissions,
+      :unread_files
+    ]
+
+    def new(information \\ %{}) when is_map(information) do
+      %D2lvalenceElixir.Data.DropboxFolder{
+        assessment:
+          Map.get(information, "Assessment", %{})
+          |> then(fn
+            map when map_size(map) == 0 ->
+              nil
+
+            map ->
+              %{}
+              |> Map.put(:rubrics, map |> Map.get("Rubrics", []))
+              |> Map.put(:score_denominator, map |> Map.get("ScoreDenominator", 0))
+          end),
+        attachments:
+          Map.get(information, "Attachments", [])
+          |> Enum.map(fn attachment ->
+            %{}
+            |> Map.put(:file_id, attachment |> Map.get("FileId", -1))
+            |> Map.put(:file_name, attachment |> Map.get("FileName", ""))
+            |> Map.put(:size, attachment |> Map.get("Size", -1))
+          end),
+        availability:
+          Map.get(information, "Availability", %{})
+          |> then(fn
+            map when map_size(map) == 0 ->
+              nil
+
+            map ->
+              %{}
+              |> Map.put(:end_date, map |> Map.get("EndDate", nil))
+              |> Map.put(:start_date, map |> Map.get("StartDate", nil))
+          end),
+        category_id: Map.get(information, "CategoryId", nil),
+        custom_instructions:
+          Map.get(information, "CustomInstructions", %{})
+          |> then(fn
+            map when map_size(map) == 0 ->
+              nil
+
+            map ->
+              %{}
+              |> Map.put(:html, map |> Map.get("Html", ""))
+              |> Map.put(:text, map |> Map.get("Text", ""))
+          end),
+        display_in_calendar: Map.get(information, "DisplayInCalendar", false),
+        due_date: Map.get(information, "DueDate", nil),
+        flagged_files: Map.get(information, "FlaggedFiles", -1),
+        groupe_type_id: Map.get(information, "GroupTypeId", nil),
+        id: Map.get(information, "Id", -1),
+        is_hidden: Map.get(information, "IsHidden", false),
+        name: Map.get(information, "Name", ""),
+        notification_email: Map.get(information, "NotificationEmail", nil),
+        total_files: Map.get(information, "TotalFiles", -1),
+        total_users: Map.get(information, "TotalUsers", -1),
+        total_users_with_feedback: Map.get(information, "TotalUsersWithFeedback", -1),
+        total_users_with_submissions: Map.get(information, "TotalUsersWithSubmissions", -1),
+        unread_files: Map.get(information, "UnreadFiles", -1)
+      }
+    end
+  end
+
+  defmodule SubmissionsForDropbox do
+    @enforce_keys [:completion_date, :entity, :feedback, :status, :submissions]
+    defstruct [:completion_date, :entity, :feedback, :status, :submissions]
+
+    def new(information \\ %{}) when is_map(information) do
+      %D2lvalenceElixir.Data.SubmissionsForDropbox{
+        completion_date: Map.get(information, "CompletionDate", nil),
+        entity:
+          Map.get(information, "Entity", %{})
+          |> then(fn
+            map when map_size(map) == 0 ->
+              nil
+
+            map ->
+              %{}
+              |> Map.put(:active, map |> Map.get("Active", false))
+              |> Map.put(:display_name, map |> Map.get("DisplayName", ""))
+              |> Map.put(:entity_id, map |> Map.get("EntityId", -1))
+              |> Map.put(:entity_type, map |> Map.get("EntityType", ""))
+          end),
+        feedback:
+          Map.get(information, "Feedback", %{})
+          |> then(fn
+            map when map_size(map) == 0 ->
+              nil
+
+            map ->
+              %{}
+              |> Map.put(:feedback, map |> Map.get("Feedback", %{}))
+              |> Map.put(:files, map |> Map.get("Files", []))
+              |> Map.put(:graded_symbol, map |> Map.get("GradedSymbol", nil))
+              |> Map.put(:is_graded, map |> Map.get("IsGraded", false))
+              |> Map.put(:rubric_assessments, map |> Map.get("RubricAssessments", false))
+              |> Map.put(:score, map |> Map.get("Score", false))
+          end),
+        status: Map.get(information, "Status", -1),
+        submissions:
+          Map.get(information, "Submissions", [])
+          |> Enum.map(fn map ->
+            D2lvalenceElixir.Data.SingleSubmissionForDropbox.new(map)
+          end)
+      }
+    end
+  end
+
+  defmodule SingleSubmissionForDropbox do
+    @enforce_keys [:comment, :files, :id, :submission_date, :submitted_by]
+    defstruct [:comment, :files, :id, :submission_date, :submitted_by]
+
+    def new(information \\ %{}) when is_map(information) do
+      %D2lvalenceElixir.Data.SingleSubmissionForDropbox{
+        comment:
+          information
+          |> Map.get("Comment", %{})
+          |> then(fn
+            map ->
+              %{}
+              |> Map.put(:html, map |> Map.get("Html", %{}))
+              |> Map.put(:text, map |> Map.get("Text", %{}))
+          end),
+        files:
+          information
+          |> Map.get("Files", [])
+          |> Enum.map(fn map -> D2lvalenceElixir.Data.SubmissionFile.new(map) end),
+        id: information |> Map.get("Id", -1),
+        submission_date: information |> Map.get("SubmissionDate", nil),
+        submitted_by:
+          information
+          |> Map.get("SubmittedBy", %{})
+          |> then(fn map ->
+            %{}
+            |> Map.put(:display_name, map |> Map.get("DisplayName", ""))
+            |> Map.put(:identifier, map |> Map.get("Identifier", ""))
+          end)
+      }
+    end
+  end
+
+  defmodule SubmissionFile do
+    @enforce_keys [:file_id, :file_name, :is_deleted, :is_flagged, :is_read, :size]
+    defstruct [:file_id, :file_name, :is_deleted, :is_flagged, :is_read, :size]
+
+    def new(information \\ %{}) when is_map(information) do
+      %D2lvalenceElixir.Data.SubmissionFile{
+        file_id: information |> Map.get("FileId", -1),
+        file_name: information |> Map.get("FileName", ""),
+        is_deleted: information |> Map.get("IsDeleted", false),
+        is_flagged: information |> Map.get("IsFlagged", false),
+        is_read: information |> Map.get("IsRead", false),
+        size: information |> Map.get("Size", -1)
+      }
+    end
+  end
+
+  defmodule FileResponse do
+    @moduledoc """
+    Downloaded files are stored in a temporary directory. It's recommended to delete this file after the download and copy.
+
+    During the requests, files are represented with a D2lvalenceElixir.Data.FileResponse struct that contains two fields:
+
+    - `:path` - the path to the downloaded file on the filesystem
+    - `:filename` - the original filename of the downloaded file
+
+    """
+    @enforce_keys [:filename, :path]
+    defstruct [:filename, :path]
+
+    def new(information \\ []) when is_list(information) do
+      defaults = [
+        filename: "",
+        path: ""
+      ]
+
+      %{filename: filename, path: path} = Keyword.merge(defaults, information) |> Enum.into(%{})
+
+      %D2lvalenceElixir.Data.FileResponse{
+        filename: filename,
+        path: path
+      }
+    end
+  end
 end

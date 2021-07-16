@@ -22,6 +22,10 @@ def deps do
 end
 ```
 
+## Documentation
+
+[HexDocs](https://hexdocs.pm/d2lvalence_elixir)
+
 ## Use
 
 ### Authentication
